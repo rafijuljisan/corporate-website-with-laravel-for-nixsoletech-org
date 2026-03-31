@@ -1,12 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corporate Website</title>
+
+    {{-- ══ 1. BASIC SEO ══ --}}
+    {{-- Falls back to site_name if meta_title is empty --}}
+    <title>{{ $settings->meta_title ?? $settings->site_name ?? 'Nixsoletech' }}</title>
+    
+    @if($settings->meta_description)
+        <meta name="description" content="{{ $settings->meta_description }}">
+    @endif
+    
+    @if($settings->meta_keywords)
+        <meta name="keywords" content="{{ $settings->meta_keywords }}">
+    @endif
+    
+    @if($settings->meta_author)
+        <meta name="author" content="{{ $settings->meta_author }}">
+    @endif
+
+    {{-- ══ 2. OPEN GRAPH (Facebook, LinkedIn, etc.) ══ --}}
+    <meta property="og:type" content="{{ $settings->og_type ?? 'website' }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $settings->og_title ?? $settings->meta_title ?? $settings->site_name }}">
+    
+    @if($settings->og_description || $settings->meta_description)
+        <meta property="og:description" content="{{ $settings->og_description ?? $settings->meta_description }}">
+    @endif
+
+    @if($settings->og_image_url)
+        <meta property="og:image" content="{{ $settings->og_image_url }}">
+    @endif
+
+    {{-- ══ 3. TWITTER CARD ══ --}}
+    <meta name="twitter:card" content="{{ $settings->twitter_card ?? 'summary_large_image' }}">
+    <meta name="twitter:title" content="{{ $settings->og_title ?? $settings->meta_title ?? $settings->site_name }}">
+    
+    @if($settings->og_description || $settings->meta_description)
+        <meta name="twitter:description" content="{{ $settings->og_description ?? $settings->meta_description }}">
+    @endif
+
+    @if($settings->og_image_url)
+        <meta name="twitter:image" content="{{ $settings->og_image_url }}">
+    @endif
+
+    {{-- ══ 4. SITE VERIFICATION ══ --}}
+    @if($settings->google_site_verification)
+        <meta name="google-site-verification" content="{{ $settings->google_site_verification }}">
+    @endif
+
+    {{-- ══ 5. ANALYTICS & TRACKING SCRIPTS ══ --}}
+    
+    {{-- Google Analytics (GA4) --}}
+    @if($settings->google_analytics_id)
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $settings->google_analytics_id }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ $settings->google_analytics_id }}');
+        </script>
+    @endif
+
+    {{-- Google Tag Manager --}}
+    @if($settings->google_tag_manager_id)
+        <script>
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','{{ $settings->google_tag_manager_id }}');
+        </script>
+    @endif
+
+    {{-- Facebook Pixel --}}
+    @if($settings->facebook_pixel_id)
+        <script>
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '{{ $settings->facebook_pixel_id }}');
+            fbq('track', 'PageView');
+        </script>
+        <noscript>
+            <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{ $settings->facebook_pixel_id }}&ev=PageView&noscript=1"/>
+        </noscript>
+    @endif
+
+    {{-- Custom Header Scripts --}}
+    {{-- Note: Using {!! !!} instead of {{ }} so HTML tags like <script> are not broken --}}
+    @if($settings->header_scripts)
+        {!! $settings->header_scripts !!}
+    @endif
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
 
     <style>
         :root {
@@ -715,6 +808,13 @@
 </head>
 <body>
 
+    {{-- Google Tag Manager (noscript) --}}
+    @if($settings->google_tag_manager_id)
+        <noscript>
+            <iframe src="https://www.googletagmanager.com/ns.html?id={{ $settings->google_tag_manager_id }}" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+        </noscript>
+    @endif
+
     <div class="top-bar d-none d-lg-block">
         <div class="container-fluid" style="max-width: 1380px; padding: 0 2rem;">
             <div class="d-flex justify-content-between align-items-center">
@@ -1050,5 +1150,10 @@
         });
     </script>
     @stack('scripts')  {{-- add this --}}
+
+    {{-- Custom Footer Scripts --}}
+    @if($settings->footer_scripts)
+        {!! $settings->footer_scripts !!}
+    @endif
 </body>
 </html>

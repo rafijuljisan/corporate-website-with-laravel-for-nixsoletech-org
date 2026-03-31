@@ -14,6 +14,7 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Controllers\SitemapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ Route::get('/services', [PublicController::class, 'services'])->name('services')
 Route::get('/services/{service}', [PublicController::class, 'showService'])->name('public.services.show');
 Route::get('/gallery', [\App\Http\Controllers\PublicController::class, 'gallery'])->name('public.gallery');
 Route::get('/career', [\App\Http\Controllers\PublicController::class, 'career'])->name('public.career');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // ==========================================
 // 2. GUEST ROUTES (Only for non-logged-in users)
